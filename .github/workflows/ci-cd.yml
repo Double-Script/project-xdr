@@ -174,12 +174,23 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             export KUBECONFIG=/home/ubuntu/.kube/config
-            
-            # 1. Apply updated NodePort manifests
-            kubectl apply -f https://raw.githubusercontent.com/Double-Script/project-xdr/main/k8s/employee-app.yaml
-            
-            # 2. Restart deployment to load fresh image
+
+            cd /home/ubuntu/project-xdr
+
+            git pull origin main
+
+            kubectl apply -f rbac.yaml
+
+            kubectl apply -f deployment.yaml
+
+            kubectl apply -f dashboard-deployment.yaml
+
+            kubectl apply -f k8s/employee-app.yaml
+
             kubectl rollout restart deployment/employee-app
+            kubectl rollout restart deployment/astra-xdr-dashboard
+
+            kubectl rollout status deployment/employee-app --timeout=120s
+            kubectl rollout status deployment/astra-xdr-dashboard --timeout=120s
+
             
-            # 3. Verify deployment health
-            kubectl rollout status deployment/employee-app
