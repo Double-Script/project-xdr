@@ -66,8 +66,8 @@ jobs:
           SONAR_HOST_URL: "https://sonarcloud.io"
         with:
           args: >
-            -Dsonar.projectKey=mrrobot7781_project-xdr
-            -Dsonar.organization=mrrobot7781
+            -Dsonar.projectKey=xdr-project
+            -Dsonar.organization=double-script
             -Dsonar.sources=.
             -Dsonar.python.coverage.reportPaths=coverage.xml
 
@@ -176,7 +176,7 @@ jobs:
             export KUBECONFIG=/home/ubuntu/.kube/config
             
             # 1. Apply updated NodePort manifests
-            kubectl apply -f https://raw.githubusercontent.com/mrrobot7781/project-xdr/main/k8s/employee-app.yaml
+            kubectl apply -f https://raw.githubusercontent.com/Double-Script/project-xdr/main/k8s/employee-app.yaml
             
             # 2. Restart deployment to load fresh image
             kubectl rollout restart deployment/employee-app

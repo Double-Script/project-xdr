@@ -16,7 +16,7 @@ spec:
       serviceAccountName: astra-dashboard-sa
       containers:
       - name: dashboard
-        image: docker.io/mrrobot7781/astra-xdr-dashboard:latest
+        image: docker.io/veeruved18/astra-xdr-dashboard:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5000

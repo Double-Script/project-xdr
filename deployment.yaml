@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: employee-app
-        image: docker.io/mrrobot7781/astra-xdr-app:latest
+        image: docker.io/veeruved18/astra-xdr-app:latest
         ports:
         - containerPort: 5000
 ---
