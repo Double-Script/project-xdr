@@ -193,4 +193,30 @@ jobs:
             kubectl rollout status deployment/employee-app --timeout=120s
             kubectl rollout status deployment/astra-xdr-dashboard --timeout=120s
 
+            # Stop existing port-forward processes
+            pkill -f "kubectl port-forward.*employee-app-service" || true
+            pkill -f "kubectl port-forward.*astra-xdr-dashboard-service" || true
+
+            sleep 2
+
+            # Start Employee App port-forward
+            nohup kubectl --kubeconfig=/home/ubuntu/.kube/config \
+            port-forward --address=0.0.0.0 svc/employee-app-service 30082:5000 \
+            >/tmp/pf-employee.log 2>&1 &
+
+            # Start Dashboard port-forward
+            nohup kubectl --kubeconfig=/home/ubuntu/.kube/config \
+            port-forward --address=0.0.0.0 svc/astra-xdr-dashboard-service 30081:5000 \
+            >/tmp/pf-dashboard.log 2>&1 &
+
+            sleep 5
+
+            echo "Checking port-forwards..."
+
+            ss -tulpn | grep 30082 || true
+            ss -tulpn | grep 30081 || true
+
+            curl http://localhost:30082 || true
+            curl http://localhost:30081 || true
+
             
