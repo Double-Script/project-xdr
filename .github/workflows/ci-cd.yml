@@ -198,25 +198,10 @@ jobs:
 
             chmod +x /home/ubuntu/start-port-forward.sh
 
-            nohup /home/ubuntu/start-port-forward.sh >/tmp/start-port-forward.log 2>&1 < /dev/null &
-            disown || true
+            sudo systemctl restart xdr-portforward
 
-            sleep 10
-
-            cat /tmp/start-port-forward.log || true
-
-            echo "Waiting for port-forwards..."
             sleep 5
 
-            echo "=== Port Forward Processes ==="
+            sudo systemctl status xdr-portforward --no-pager
+
             ps -ef | grep "kubectl port-forward" | grep -v grep || true
-
-            echo "=== Dashboard Log ==="
-            cat /tmp/pf-dashboard.log || true
-
-            echo "=== Employee Log ==="
-            cat /tmp/pf-employee.log || true
-
-            echo "=== Listening Ports ==="
-            ss -tulpn | grep 30081 || true
-            ss -tulpn | grep 30082 || true
