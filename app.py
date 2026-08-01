@@ -18,7 +18,8 @@ app = Flask(__name__)
 # FIX FOR PYTEST: Added root route  '/' to resolve 404 error during CI/CD testing
 @app.route('/')
 def home():
-    return render_template_string(LOGIN_TEMPLATE)
+    # return render_template_string(LOGIN_TEMPLATE)
+    return redirect('/login')
 # VULNERABILITY #1: Hardcoded Secret Key (Information Disclosure + Weak Session Management)
 app.secret_key = 'super-secret-key-12345-production'
 
@@ -449,7 +450,7 @@ LOGIN_TEMPLATE = """
         {% if error %}
         <div class="error">{{ error }}</div>
         {% endif %}
-        <form method="post">
+        <form method="post" action="/login">
             <input type="text" name="username" placeholder="Username" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit">Login</button>
