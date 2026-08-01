@@ -197,7 +197,13 @@ jobs:
             sleep 15
 
             chmod +x /home/ubuntu/start-port-forward.sh
-            /home/ubuntu/start-port-forward.sh
+
+            nohup /home/ubuntu/start-port-forward.sh >/tmp/start-port-forward.log 2>&1 < /dev/null &
+            disown || true
+
+            sleep 10
+
+            cat /tmp/start-port-forward.log || true
 
             echo "Waiting for port-forwards..."
             sleep 5
