@@ -192,12 +192,25 @@ jobs:
 
             kubectl rollout status deployment/employee-app --timeout=120s
             kubectl rollout status deployment/astra-xdr-dashboard --timeout=120s
-            
+
+            echo "Waiting 15 seconds for services to stabilize..."
+            sleep 15
+
             chmod +x /home/ubuntu/start-port-forward.sh
             /home/ubuntu/start-port-forward.sh
 
+            echo "Waiting for port-forwards..."
             sleep 5
 
-            ps -ef | grep port-forward || true
-            ss -tulpn | grep 30082 || true
+            echo "=== Port Forward Processes ==="
+            ps -ef | grep "kubectl port-forward" | grep -v grep || true
+
+            echo "=== Dashboard Log ==="
+            cat /tmp/pf-dashboard.log || true
+
+            echo "=== Employee Log ==="
+            cat /tmp/pf-employee.log || true
+
+            echo "=== Listening Ports ==="
             ss -tulpn | grep 30081 || true
+            ss -tulpn | grep 30082 || true
