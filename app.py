@@ -386,7 +386,7 @@ def get_performance(emp_id):
         'reviews': [dict(r) for r in reviews]
     })
 
-# VULNERABILITY #23: Information Disclosure via comments
+# VULNERABILITY #23: Information Dis   closure via comments
 @app.route('/api/system-info')
 def system_info():
     """Endpoint exposing system information"""
