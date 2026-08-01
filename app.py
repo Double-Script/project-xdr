@@ -399,7 +399,7 @@ def system_info():
         'debug_mode': app.debug
     })
 
-# VULNERABILITY #24: Missing Content-Type validation
+# VULNERABILITY #24:  Missing Content-Type validation
 @app.route('/api/export', methods=['POST'])
 def export_data():
     """Export employee data in any format"""
