@@ -2,10 +2,11 @@ from flask import Flask, request, jsonify, render_template_string, Response
 from kubernetes import client, config
 import datetime
 from functools import wraps
+from collections import deque
 
 app = Flask(__name__)
 alerts = []
-
+falco_alerts = deque(maxlen=100)
 ADMIN_USER = "admin"
 ADMIN_PASS = "AstraXdr@2026"
 
@@ -388,6 +389,22 @@ def receive_falco_event():
         alerts.append(alert)
         return jsonify({"status": "received"}), 200
     return jsonify({"error": "invalid payload"}), 400
+@app.route("/api/falco", methods=["POST"])
+def falco_webhook():
+    data = request.get_json(force=True)
+
+    print("Received Falco Alert:")
+    print(data)
+
+    falco_alerts.appendleft(data)
+
+    return jsonify({
+        "status": "received"
+    }), 200
+
+@app.route("/api/alerts", methods=["GET"])
+def get_alerts():
+    return jsonify(list(falco_alerts))
 
 @app.route('/api/pod/remediate', methods=['POST'])
 @requires_auth
