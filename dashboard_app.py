@@ -6,7 +6,7 @@ from collections import deque
 
 app = Flask(__name__)
 alerts = []
-falco_alerts = deque(maxlen=100)
+
 ADMIN_USER = "admin"
 ADMIN_PASS = "AstraXdr@2026"
 
@@ -371,24 +371,24 @@ def index():
     stats = get_cluster_stats()
     return render_template_string(HTML_TEMPLATE, alerts=list(reversed(alerts)), stats=stats)
 
-@app.route('/api/falco/events', methods=['POST'])
-def receive_falco_event():
-    data = request.get_json(force=True)
-    if data:
-        output_fields = data.get('output_fields', {})
-        pod_name = output_fields.get('k8s.pod.name', 'Unknown')
+# @app.route('/api/falco/events', methods=['POST'])
+# def receive_falco_event():
+#     data = request.get_json(force=True)
+#     if data:
+#         output_fields = data.get('output_fields', {})
+#         pod_name = output_fields.get('k8s.pod.name', 'Unknown')
         
-        alert = {
-            'time': data.get('time', str(datetime.datetime.now())),
-            'rule': data.get('rule', 'Unknown Rule'),
-            'priority': data.get('priority', 'Notice'),
-            'output': data.get('output', 'No message body'),
-            'pod': pod_name,
-            'remediated': False
-        }
-        alerts.append(alert)
-        return jsonify({"status": "received"}), 200
-    return jsonify({"error": "invalid payload"}), 400
+#         alert = {
+#             'time': data.get('time', str(datetime.datetime.now())),
+#             'rule': data.get('rule', 'Unknown Rule'),
+#             'priority': data.get('priority', 'Notice'),
+#             'output': data.get('output', 'No message body'),
+#             'pod': pod_name,
+#             'remediated': False
+#         }
+#         alerts.append(alert)
+#         return jsonify({"status": "received"}), 200
+#     return jsonify({"error": "invalid payload"}), 400
 @app.route("/api/falco", methods=["POST"])
 def falco_webhook():
     data = request.get_json(force=True)
@@ -396,15 +396,20 @@ def falco_webhook():
     print("Received Falco Alert:")
     print(data)
 
-    falco_alerts.appendleft(data)
+    output_fields = data.get("output_fields", {})
 
-    return jsonify({
-        "status": "received"
-    }), 200
+    alerts.append({
+        "time": data.get("time", str(datetime.datetime.now())),
+        "rule": data.get("rule", "Unknown"),
+        "priority": data.get("priority", "Notice"),
+        "output": data.get("output", ""),
+        "pod": output_fields.get("k8s.pod.name", "Unknown"),
+        "remediated": False
+    })
 
-@app.route("/api/alerts", methods=["GET"])
-def get_alerts():
-    return jsonify(list(falco_alerts))
+    return jsonify({"status": "received"}), 200
+
+
 
 @app.route('/api/pod/remediate', methods=['POST'])
 @requires_auth
